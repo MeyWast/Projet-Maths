@@ -3,8 +3,9 @@ import pandas as pd
 import pylab as pl
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.express as px
 
-
+mapbox_token = "pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q"
 # Noms des donnes
 donnees = ["Instant", "Latitude", "Longitude", "Pays", "Magnitude", "Profondeur"]
 
@@ -49,4 +50,9 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 # print("Nombre de micros-tremblement en Californie", California)
 # print("Nombre de micros-tremblement en Alaska", Alaska)
 
+# Sélection des séismes perceptibles pour l’humain 
+
+# F = data[data["Magnitude"] >= 3]
+# F['m'] = F['Magnitude'].astype(int)
+# print(F)
 
