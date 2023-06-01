@@ -56,3 +56,57 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 # F['m'] = F['Magnitude'].astype(int)
 # print(F)
 
+# Définir votre clé Mapbox
+mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
+
+# Définir la palette de couleurs
+palette = {
+    3: 'hotpink',
+    4: 'green',
+    5: 'chocolate',
+    6: 'blue',
+    7: 'red',
+    8: 'black'
+}
+
+# Filtrer les séismes de magnitude inférieure à 5
+seismes_moins_5 = data[data['Magnitude'] < 5]
+
+# Créer la carte de chaleur des séismes de magnitude inférieure à 5
+fig = px.density_mapbox(
+    seismes_moins_5,
+    lat='Lat',
+    lon='Lon',
+    z='Mag',
+    radius=10,
+    zoom=0,
+    mapbox_style='streets',
+    color_continuous_scale=list(palette.values()),
+    #color='Magnitude',
+    opacity=0.6,
+    center={'lat': 0, 'lon': 0},
+    labels={'Magnitude': 'Magnitude'}
+)
+
+# Ajouter les épicentres des séismes de magnitude supérieure ou égale à 5
+seismes_plus_5 = data[data['Magnitude'] >= 5]
+for _, row in seismes_plus_5.iterrows():
+    mag = row['Magnitude']
+    color = palette[mag]
+    size = 10 + 10 * (mag - 5)
+    fig.add_trace(px.scatter_mapbox(
+        lat=[row['Latitude']],
+        lon=[row['Longitude']],
+        marker={'color': color, 'size': size},
+        hoverinfo='skip'
+    ).data[0])
+
+# Mettre à jour la mise en page de la carte
+fig.update_layout(
+    margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
+    mapbox={'accesstoken': mapbox_token}
+)
+
+# Afficher la carte
+fig.show()
+
