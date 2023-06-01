@@ -4,8 +4,8 @@ import pylab as pl
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+import numpy as np
 
-mapbox_token = "pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q"
 # Noms des donnes
 donnees = ["Instant", "Latitude", "Longitude", "Pays", "Magnitude", "Profondeur"]
 
@@ -51,15 +51,40 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 # print("Nombre de micros-tremblement en Alaska", Alaska)
 
 # Sélection des séismes perceptibles pour l’humain 
-
-# F = data[data["Magnitude"] >= 3]
+# F = data[(data["Magnitude"] >= 5) & (data["Magnitude"] <= 8)]
+# F = data[(data["Magnitude"] >= 3) & (data["Magnitude"] < 5)]
 # F['m'] = F['Magnitude'].astype(int)
-# print(F)
+# F['Taille'] = 10 + 10 * (F['m'] - 5)
 
 # Définir votre clé Mapbox
-mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
+# mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
 
-# Définir la palette de couleurs
+# Dictionnaire de la palette de couleurs
+# palette = {
+#     3: 'hotpink',
+#     4: 'green',
+#     5: 'chocolate',
+#     6: 'blue',
+#     7: 'red',
+#     8: 'black'
+# }
+
+# Créer la carte de chaleur des séismes de magnitude inférieure à 5 avec votre palette de couleurs personnalisée
+# fig = px.density_mapbox(F, lat='Latitude', lon='Longitude', z='Magnitude', radius=3,
+#                          center=dict(lat=0, lon=180), zoom=0,
+#                          mapbox_style="stamen-terrain")
+
+# fig = px.density_mapbox(F, lat='Latitude', lon='Longitude', z='Magnitude', radius=F['Taille'].tolist(),
+#                         center=dict(lat=0, lon=180), zoom=0,
+#                         mapbox_style="stamen-terrain", color_continuous_scale=list(palette.values()))
+
+# Afficher la carte
+# fig.show()
+
+E = data[(data["Magnitude"] >= 5) & (data["Magnitude"] <= 8)]
+E['m'] = E['Magnitude'].astype(int) 
+E['Taille'] = 10 + 10 * (E['m']- 5)
+mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
 palette = {
     3: 'hotpink',
     4: 'green',
@@ -69,44 +94,11 @@ palette = {
     8: 'black'
 }
 
-# Filtrer les séismes de magnitude inférieure à 5
-seismes_moins_5 = data[data['Magnitude'] < 5]
-
-# Créer la carte de chaleur des séismes de magnitude inférieure à 5
-fig = px.density_mapbox(
-    seismes_moins_5,
-    lat='Lat',
-    lon='Lon',
-    z='Mag',
-    radius=10,
-    zoom=0,
-    mapbox_style='streets',
-    color_continuous_scale=list(palette.values()),
-    #color='Magnitude',
-    opacity=0.6,
-    center={'lat': 0, 'lon': 0},
-    labels={'Magnitude': 'Magnitude'}
-)
-
-# Ajouter les épicentres des séismes de magnitude supérieure ou égale à 5
-seismes_plus_5 = data[data['Magnitude'] >= 5]
-for _, row in seismes_plus_5.iterrows():
-    mag = row['Magnitude']
-    color = palette[mag]
-    size = 10 + 10 * (mag - 5)
-    fig.add_trace(px.scatter_mapbox(
-        lat=[row['Latitude']],
-        lon=[row['Longitude']],
-        marker={'color': color, 'size': size},
-        hoverinfo='skip'
-    ).data[0])
-
-# Mettre à jour la mise en page de la carte
-fig.update_layout(
-    margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
-    mapbox={'accesstoken': mapbox_token}
-)
+fig = px.density_mapbox(E, lat='Latitude', lon='Longitude', z='Magnitude', radius=E['Taille'].tolist(),
+                        center=dict(lat=0, lon=180), zoom=0, mapbox_style="dark", color_continuous_scale=list(palette.values()))
 
 # Afficher la carte
 fig.show()
+
+
 
