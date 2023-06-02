@@ -82,19 +82,101 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 # Afficher la carte
 # fig.show()
 
-# E = data[(data["Magnitude"] >= 5) & (data["Magnitude"] <= 8)]
-# E['m'] = E['Magnitude'].astype(int) 
-# E['Taille'] = 10 + 10 * (E['m'] - 5)
-# mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
+# import plotly.graph_objects as go
 
-import plotly.graph_objects as go
+# E = data[(data["Magnitude"] >= 3) & (data["Magnitude"] < 9)]
+# E['m'] = E['Magnitude'].astype(int)
+# E['Taille'] = 5 + 5 * (E['m'] - 2)
+# m3 = E[E['m'] == 3]
+# m4 = E[E['m'] == 4]
+# m5 = E[E['m'] == 5]
+# m6 = E[E['m'] == 6]
+# m7 = E[E['m'] == 7]
+# m8 = E[E['m'] == 8]
 
-fig = go.Figure(go.Scattergeo())
-fig.update_geos(projection_type="natural earth")
-fig.update_layout(
-    height=300,
-    margin={"r":0,"t":0,"l":0,"b":0},
-    dragmode=False  # Désac tiver le défilement
-)
-fig.show()
+# # Données des marqueurs
+# lats = E['Latitude'].tolist()
+# lons = E['Longitude'].tolist()
+# sizes = E['Taille'].tolist()
 
+# # Dictionnaire de correspondance des valeurs de m avec les couleurs
+# palette = {
+#     3: 'hotpink',
+#     4: 'green',
+#     5: 'chocolate',
+#     6: 'blue',
+#     7: 'red',
+#     8: 'black'
+# }
+
+# # Création de la liste de couleurs en fonction des valeurs de m
+# couleurs = [palette[m] for m in E['m']]
+
+# hover_text = [
+#     f"Date: {date}<br>Latitude: {lat}<br>Longitude: {lon}<br>Magnitude: {size}<br>Lieu: {pays}"
+#     for date, lat, lon, size, pays in zip(E['Instant'], E['Latitude'], E['Longitude'], E['m'], E['Pays'])
+# ]
+
+# # Création de la trace Scattergeo avec les marqueurs, les couleurs et le texte de survol
+# trace = go.Scattergeo(
+#     lat=lats,
+#     lon=lons,
+#     mode='markers',
+#     marker=dict(
+#         size=sizes,
+#         color=couleurs,
+#         line=dict(width=0.5, color='white')
+#     ),
+#     hovertemplate="<b>%{text}</b><extra></extra>",  # Utilisation de la variable de texte
+#     text=hover_text,  # Assignation du texte de survol à la variable de texte
+#     legendgroup='markers',  # Assignation du même legendgroup pour le trace principal
+#     name="Magnitude m"
+# )
+
+# fig = go.Figure()
+
+
+# fig.add_trace(trace)
+
+# # Répartition des valeurs de m
+# labels = [len(m3), len(m4), len(m5), len(m6), len(m7), len(m8)]
+# values = [len(m3), len(m4), len(m5), len(m6), len(m7), len(m8)]
+
+# # Création de la trace de camembert en légende
+# pie_trace = go.Pie(
+#     labels=labels,
+#     values=values,
+#     marker=dict(colors=[palette[m] for m in range(3, 9)]),
+#     domain={'x': [0, 0.4], 'y': [0.8, 1]},
+#     name='Magnitude Distribution',
+#     legendgroup='magnitude'
+# )
+
+# fig.add_trace(pie_trace)
+# for i in range(3, 9):
+#     # Création d'une trace Scattergeo pour chaque valeur de m
+#     trace_temp = go.Scattergeo(
+#         lat=E[E['m'] == i]['Latitude'],
+#         lon=E[E['m'] == i]['Longitude'],
+#         mode='markers',
+#         marker=dict(
+#             size=5 + 5 * (i - 2),
+#             color=['hotpink', 'green', 'chocolate', 'blue', 'red', 'black'][i - 3],
+#             line=dict(width=0.5, color='white')
+#         ),
+#         hoverinfo='none',  # Pas de texte de survol
+#         name="m = " + str(i)
+#     )
+#     fig.add_trace(trace_temp)  # Ajout de la trace à la figure
+
+
+
+
+# fig.update_geos(projection_type="natural earth")
+# fig.update_layout(
+#     height=500,
+#     margin={"r": 0, "t": 0, "l": 0, "b": 0},
+#     dragmode=False
+# )
+
+# fig.show()
