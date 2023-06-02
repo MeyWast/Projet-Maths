@@ -47,6 +47,7 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 # California = data[(data["Pays"] == "California") & (data["Magnitude"] <= 2)].shape[0]
 # Alaska = data[(data["Pays"] == "Alaska") & (data["Magnitude"] <= 2)].shape[0]
 
+
 # print("Nombre de micros-tremblement en Californie", California)
 # print("Nombre de micros-tremblement en Alaska", Alaska)
 
@@ -74,31 +75,26 @@ data = pd.read_csv('seismes_2014.csv', names = donnees, skiprows = 1)
 #                          center=dict(lat=0, lon=180), zoom=0,
 #                          mapbox_style="stamen-terrain")
 
-# fig = px.density_mapbox(F, lat='Latitude', lon='Longitude', z='Magnitude', radius=F['Taille'].tolist(),
-#                         center=dict(lat=0, lon=180), zoom=0,
-#                         mapbox_style="stamen-terrain", color_continuous_scale=list(palette.values()))
+# fig = px.scatter_mapbox(E, lat='Latitude', lon='Longitude', size='Taille', color='m', 
+#                  color_continuous_scale=list(palette.values()), center=dict(lat=0, lon=180), zoom=0)
 
+# fig.update_layout(mapbox_style="streets", mapbox_accesstoken=mapbox_token)
 # Afficher la carte
 # fig.show()
 
-E = data[(data["Magnitude"] >= 5) & (data["Magnitude"] <= 8)]
-E['m'] = E['Magnitude'].astype(int) 
-E['Taille'] = 10 + 10 * (E['m']- 5)
-mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
-palette = {
-    3: 'hotpink',
-    4: 'green',
-    5: 'chocolate',
-    6: 'blue',
-    7: 'red',
-    8: 'black'
-}
+# E = data[(data["Magnitude"] >= 5) & (data["Magnitude"] <= 8)]
+# E['m'] = E['Magnitude'].astype(int) 
+# E['Taille'] = 10 + 10 * (E['m'] - 5)
+# mapbox_token = 'pk.eyJ1IjoibGVuZHJheGFlIiwiYSI6ImNsaWNzejlldjBmM2UzZ21xYm53NmNyODEifQ.FQ7qiYDTh-RSKyvlYYI69Q'
 
-fig = px.density_mapbox(E, lat='Latitude', lon='Longitude', z='Magnitude', radius=E['Taille'].tolist(),
-                        center=dict(lat=0, lon=180), zoom=0, mapbox_style="dark", color_continuous_scale=list(palette.values()))
+import plotly.graph_objects as go
 
-# Afficher la carte
+fig = go.Figure(go.Scattergeo())
+fig.update_geos(projection_type="natural earth")
+fig.update_layout(
+    height=300,
+    margin={"r":0,"t":0,"l":0,"b":0},
+    dragmode=False  # Désac tiver le défilement
+)
 fig.show()
-
-
 
